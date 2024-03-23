@@ -4,12 +4,12 @@ node {
         checkout scm
     }
     stage('Build image') {
-       app = docker.build("van40s/jenkins_repo")
+       app = docker.build("mjovanovik/kiii-jenkins")
     }
-    stage('Push image') {
-        withDockerRegistry([credentialsId: 'dockerhub', url: 'https://registry.hub.docker.com']) {
-            sh "docker push ${env.BRANCH_NAME}-${env.BUILD_NUMBER}"
-            sh "docker push ${env.BRANCH_NAME}-latest"
+    stage('Push image') {   
+        docker.withRegistry('https://registry.hub.docker.com', 'dockerhub') {
+            app.push("${env.BRANCH_NAME}-${env.BUILD_NUMBER}")
+            app.push("${env.BRANCH_NAME}-latest")
             // signal the orchestrator that there is a new version
         }
     }
